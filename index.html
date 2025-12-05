@@ -1,0 +1,1043 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>مسابقه جایزه روزانه</title>
+  <script src="/_sdk/data_sdk.js"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <style>
+    body {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100%;
+      width: 100%;
+      overflow-x: hidden;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    .app-wrapper {
+      width: 100%;
+      min-height: 100%;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 50px;
+      animation: fadeInDown 0.8s ease-out;
+    }
+
+    .main-title {
+      font-size: 48px;
+      color: #ffffff;
+      margin: 0 0 10px 0;
+      text-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      font-weight: 700;
+    }
+
+    .subtitle {
+      font-size: 20px;
+      color: #f0f0f0;
+      margin: 0;
+      opacity: 0.95;
+    }
+
+    .admin-toggle {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 1000;
+    }
+
+    .admin-btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .admin-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+
+    .admin-panel {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.8);
+      z-index: 2000;
+      padding: 40px 20px;
+      overflow-y: auto;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    .admin-content {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 24px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #f0f0f0;
+    }
+
+    .admin-title {
+      font-size: 32px;
+      color: #333;
+      margin: 0;
+    }
+
+    .close-btn {
+      background: #ff4757;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .close-btn:hover {
+      background: #ff3838;
+      transform: scale(1.05);
+    }
+
+    .login-form {
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    .login-input {
+      width: 100%;
+      max-width: 400px;
+      padding: 16px 24px;
+      font-size: 18px;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      text-align: center;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      transition: all 0.3s ease;
+    }
+
+    .login-input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    }
+
+    .login-btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 16px 48px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 18px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .login-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px rgba(102, 126, 234, 0.3);
+    }
+
+    .error-message {
+      color: #ff4757;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    .prize-list {
+      display: grid;
+      gap: 20px;
+    }
+
+    .prize-item {
+      background: #f8f9fa;
+      padding: 24px;
+      border-radius: 16px;
+      border: 2px solid #e0e0e0;
+      transition: all 0.3s ease;
+    }
+
+    .prize-item:hover {
+      border-color: #667eea;
+      box-shadow: 0 8px 24px rgba(102, 126, 234, 0.15);
+    }
+
+    .prize-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .prize-name {
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .probability-control {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .probability-input {
+      width: 80px;
+      padding: 8px 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 16px;
+      text-align: center;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .probability-label {
+      font-size: 14px;
+      color: #666;
+      font-weight: 600;
+    }
+
+    .save-btn {
+      background: #2ecc71;
+      color: white;
+      border: none;
+      padding: 14px 32px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      width: 100%;
+      margin-top: 30px;
+      transition: all 0.3s ease;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .save-btn:hover {
+      background: #27ae60;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(46, 204, 113, 0.3);
+    }
+
+    .boxes-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 30px;
+      margin: 0 auto;
+      max-width: 1000px;
+      animation: fadeInUp 1s ease-out;
+    }
+
+    @media (max-width: 900px) {
+      .boxes-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .boxes-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+      }
+    }
+
+    .gift-box {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1;
+      cursor: pointer;
+      transform-style: preserve-3d;
+      transition: transform 0.5s ease;
+    }
+
+    .gift-box:hover {
+      transform: translateY(-10px) rotateY(15deg);
+    }
+
+    .box-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      transition: all 0.6s ease;
+    }
+
+    .box-face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(145deg, #ff6b6b, #ee5a6f);
+      border: 3px solid #fff;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+
+    .box-face::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80%;
+      height: 20%;
+      background: linear-gradient(90deg, #ffd700, #ffed4e);
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+    }
+
+    .box-face::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 20%;
+      height: 80%;
+      background: linear-gradient(180deg, #ffd700, #ffed4e);
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+    }
+
+    .box-number {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: 700;
+      color: #ff6b6b;
+      z-index: 10;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .box-shine {
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+      animation: shine 3s infinite;
+    }
+
+    @keyframes shine {
+      0%, 100% { left: -100%; }
+      50% { left: 100%; }
+    }
+
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.9);
+      z-index: 3000;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 24px;
+      padding: 50px 40px;
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+      position: relative;
+      animation: bounceIn 0.6s ease-out;
+      box-shadow: 0 20px 80px rgba(0,0,0,0.5);
+    }
+
+    .confetti {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: #ffd700;
+      top: 0;
+      animation: confetti-fall 3s linear;
+    }
+
+    @keyframes confetti-fall {
+      0% {
+        transform: translateY(-100%) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(500%) rotate(720deg);
+        opacity: 0;
+      }
+    }
+
+    .win-icon {
+      font-size: 80px;
+      margin-bottom: 20px;
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    .win-title {
+      font-size: 32px;
+      color: #333;
+      margin: 0 0 15px 0;
+      font-weight: 700;
+    }
+
+    .prize-display {
+      font-size: 24px;
+      color: #667eea;
+      margin: 20px 0;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 12px;
+      font-weight: 600;
+    }
+
+    .instruction {
+      font-size: 16px;
+      color: #666;
+      margin: 20px 0;
+      line-height: 1.6;
+    }
+
+    .telegram-link {
+      display: inline-block;
+      background: linear-gradient(135deg, #0088cc, #229ED9);
+      color: white;
+      text-decoration: none;
+      padding: 14px 32px;
+      border-radius: 12px;
+      font-size: 18px;
+      font-weight: 600;
+      margin-top: 20px;
+      transition: all 0.3s ease;
+    }
+
+    .telegram-link:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px rgba(0, 136, 204, 0.3);
+    }
+
+    .close-modal-btn {
+      background: #e0e0e0;
+      color: #333;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      margin-top: 20px;
+      transition: all 0.3s ease;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .close-modal-btn:hover {
+      background: #d0d0d0;
+    }
+
+    .timer-info {
+      text-align: center;
+      margin-top: 40px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 16px;
+      backdrop-filter: blur(10px);
+    }
+
+    .timer-text {
+      font-size: 18px;
+      color: white;
+      margin: 0;
+      font-weight: 600;
+    }
+
+    .countdown {
+      font-size: 32px;
+      color: #ffd700;
+      margin: 10px 0 0 0;
+      font-weight: 700;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes bounceIn {
+      0% {
+        transform: scale(0.3);
+        opacity: 0;
+      }
+      50% {
+        transform: scale(1.05);
+      }
+      70% {
+        transform: scale(0.9);
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .disabled {
+      pointer-events: none;
+      opacity: 0.5;
+    }
+
+    .loading {
+      opacity: 0.7;
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+ </head>
+ <body>
+  <div class="app-wrapper">
+   <div class="admin-toggle"><button class="admin-btn" id="adminToggleBtn">پنل مدیریت</button>
+   </div>
+   <div class="container">
+    <div class="header">
+     <h1 class="main-title" id="mainTitle">مسابقه جایزه روزانه</h1>
+     <p class="subtitle" id="subtitle">هر روز یک جعبه را انتخاب کنید و جایزه خود را دریافت کنید!</p>
+    </div>
+    <div class="boxes-grid" id="boxesGrid"></div>
+    <div class="timer-info" id="timerInfo" style="display: none;">
+     <p class="timer-text">برای انتخاب جعبه بعدی صبر کنید</p>
+     <p class="countdown" id="countdown">00:00:00</p>
+    </div>
+   </div>
+  </div>
+  <div class="admin-panel" id="adminPanel">
+   <div class="admin-content">
+    <div id="loginSection">
+     <div class="login-form">
+      <h2 style="color: #333; margin-bottom: 30px;">ورود به پنل مدیریت</h2>
+      <form id="loginForm"><input type="password" class="login-input" id="adminPassword" placeholder="رمز عبور را وارد کنید" required>
+       <div class="error-message" id="loginError" style="display: none;">
+        رمز عبور اشتباه است!
+       </div><button type="submit" class="login-btn">ورود</button>
+      </form>
+     </div>
+    </div>
+    <div id="adminSection" style="display: none;">
+     <div class="admin-header">
+      <h2 class="admin-title">پنل مدیریت جوایز</h2><button class="close-btn" id="closeAdminBtn">بستن</button>
+     </div>
+     <div class="prize-list" id="prizeList"></div><button class="save-btn" id="saveBtn">ذخیره تغییرات</button>
+    </div>
+   </div>
+  </div>
+  <div class="modal-overlay" id="modalOverlay">
+   <div class="modal-content">
+    <div class="win-icon">
+     🎉
+    </div>
+    <h2 class="win-title" id="winMessage">تبریک! شما برنده شدید!</h2>
+    <div class="prize-display" id="prizeDisplay"></div>
+    <p class="instruction" id="instructionText">لطفاً از این صفحه اسکرین‌شات بگیرید و به آیدی تلگرام زیر ارسال کنید تا جایزه خود را دریافت کنید:</p><a href="https://t.me/Mahdi7ai" target="_blank" rel="noopener noreferrer" class="telegram-link">ارسال به تلگرام @Mahdi7ai</a> <button class="close-modal-btn" id="closeModalBtn">بستن</button>
+   </div>
+  </div>
+  <script>
+    const ADMIN_PASSWORD = '100700';
+    const PRIZE_STORAGE_KEY = 'prize_data';
+    const LAST_CLAIM_KEY = 'last_claim_timestamp';
+
+    const defaultConfig = {
+      main_title: 'مسابقه جایزه روزانه',
+      subtitle: 'هر روز یک جعبه را انتخاب کنید و جایزه خود را دریافت کنید!',
+      win_message: 'تبریک! شما برنده شدید!',
+      instruction_text: 'لطفاً از این صفحه اسکرین‌شات بگیرید و به آیدی تلگرام زیر ارسال کنید تا جایزه خود را دریافت کنید:',
+      primary_color: '#667eea',
+      secondary_color: '#764ba2',
+      text_color: '#ffffff',
+      box_color: '#ff6b6b',
+      accent_color: '#ffd700',
+      font_family: 'Segoe UI'
+    };
+
+    const defaultPrizes = [
+      { id: '1', prize_name: '50 درصد تخفیف دوره ادمین طراح', probability: 12.5 },
+      { id: '2', prize_name: '40 درصد تخفیف دوره هوش مصنوعی', probability: 12.5 },
+      { id: '3', prize_name: '70 درصد دوره استوری موشن', probability: 12.5 },
+      { id: '4', prize_name: 'اکانت یک ماهه کپ کات', probability: 12.5 },
+      { id: '5', prize_name: '1 ساعت مشاوره رایگان', probability: 12.5 },
+      { id: '6', prize_name: '60 درصد تخفیف روی هر دوره', probability: 12.5 },
+      { id: '7', prize_name: 'پک آیکون های سه بعدی', probability: 12.5 },
+      { id: '8', prize_name: '300 هزار تومان', probability: 12.5 }
+    ];
+
+    let prizes = [...defaultPrizes];
+    let isLoggedIn = false;
+    let canClaim = true;
+    let countdownInterval = null;
+
+    const dataHandler = {
+      onDataChanged(data) {
+        if (data.length > 0) {
+          prizes = data.map(record => ({
+            id: record.id,
+            prize_name: record.prize_name,
+            probability: record.probability,
+            __backendId: record.__backendId
+          }));
+          
+          if (isLoggedIn) {
+            renderPrizeList();
+          }
+
+          const lastClaimRecord = data.find(record => record.id === LAST_CLAIM_KEY);
+          if (lastClaimRecord) {
+            const lastClaimTime = lastClaimRecord.last_claim_timestamp;
+            checkClaimAvailability(lastClaimTime);
+          }
+        }
+      }
+    };
+
+    async function onConfigChange(config) {
+      document.getElementById('mainTitle').textContent = config.main_title || defaultConfig.main_title;
+      document.getElementById('subtitle').textContent = config.subtitle || defaultConfig.subtitle;
+      document.getElementById('winMessage').textContent = config.win_message || defaultConfig.win_message;
+      document.getElementById('instructionText').textContent = config.instruction_text || defaultConfig.instruction_text;
+
+      const primaryColor = config.primary_color || defaultConfig.primary_color;
+      const secondaryColor = config.secondary_color || defaultConfig.secondary_color;
+      const textColor = config.text_color || defaultConfig.text_color;
+      const customFont = config.font_family || defaultConfig.font_family;
+      const baseFontStack = 'Tahoma, Geneva, Verdana, sans-serif';
+
+      document.body.style.background = `linear-gradient(135deg, ${primaryColor} 0%, ${secondaryColor} 100%)`;
+      document.body.style.fontFamily = `${customFont}, ${baseFontStack}`;
+      
+      const mainTitle = document.getElementById('mainTitle');
+      mainTitle.style.color = textColor;
+      mainTitle.style.fontFamily = `${customFont}, ${baseFontStack}`;
+      
+      const subtitle = document.getElementById('subtitle');
+      subtitle.style.color = textColor;
+      subtitle.style.fontFamily = `${customFont}, ${baseFontStack}`;
+
+      const timerText = document.querySelector('.timer-text');
+      if (timerText) {
+        timerText.style.color = textColor;
+        timerText.style.fontFamily = `${customFont}, ${baseFontStack}`;
+      }
+    }
+
+    async function initializeApp() {
+      const initResult = await window.dataSdk.init(dataHandler);
+      if (!initResult.isOk) {
+        console.error('Failed to initialize data SDK');
+        return;
+      }
+
+      await window.elementSdk.init({
+        defaultConfig,
+        onConfigChange,
+        mapToCapabilities: (config) => ({
+          recolorables: [
+            {
+              get: () => config.primary_color || defaultConfig.primary_color,
+              set: (value) => {
+                config.primary_color = value;
+                window.elementSdk.setConfig({ primary_color: value });
+              }
+            },
+            {
+              get: () => config.secondary_color || defaultConfig.secondary_color,
+              set: (value) => {
+                config.secondary_color = value;
+                window.elementSdk.setConfig({ secondary_color: value });
+              }
+            },
+            {
+              get: () => config.text_color || defaultConfig.text_color,
+              set: (value) => {
+                config.text_color = value;
+                window.elementSdk.setConfig({ text_color: value });
+              }
+            },
+            {
+              get: () => config.box_color || defaultConfig.box_color,
+              set: (value) => {
+                config.box_color = value;
+                window.elementSdk.setConfig({ box_color: value });
+              }
+            },
+            {
+              get: () => config.accent_color || defaultConfig.accent_color,
+              set: (value) => {
+                config.accent_color = value;
+                window.elementSdk.setConfig({ accent_color: value });
+              }
+            }
+          ],
+          borderables: [],
+          fontEditable: {
+            get: () => config.font_family || defaultConfig.font_family,
+            set: (value) => {
+              config.font_family = value;
+              window.elementSdk.setConfig({ font_family: value });
+            }
+          },
+          fontSizeable: undefined
+        }),
+        mapToEditPanelValues: (config) => new Map([
+          ['main_title', config.main_title || defaultConfig.main_title],
+          ['subtitle', config.subtitle || defaultConfig.subtitle],
+          ['win_message', config.win_message || defaultConfig.win_message],
+          ['instruction_text', config.instruction_text || defaultConfig.instruction_text]
+        ])
+      });
+
+      renderBoxes();
+      setupEventListeners();
+    }
+
+    function renderBoxes() {
+      const grid = document.getElementById('boxesGrid');
+      grid.innerHTML = '';
+
+      for (let i = 1; i <= 8; i++) {
+        const box = document.createElement('div');
+        box.className = 'gift-box';
+        box.innerHTML = `
+          <div class="box-inner">
+            <div class="box-face">
+              <div class="box-number">${i}</div>
+              <div class="box-shine"></div>
+            </div>
+          </div>
+        `;
+        
+        box.addEventListener('click', () => handleBoxClick(i));
+        grid.appendChild(box);
+      }
+    }
+
+    async function handleBoxClick(boxNumber) {
+      if (!canClaim) {
+        return;
+      }
+
+      const grid = document.getElementById('boxesGrid');
+      grid.classList.add('disabled', 'loading');
+
+      await new Promise(resolve => setTimeout(resolve, 800));
+
+      const selectedPrize = selectRandomPrize();
+      showWinModal(selectedPrize);
+
+      const currentTime = Date.now();
+      const lastClaimRecords = prizes.filter(p => p.id === LAST_CLAIM_KEY);
+      
+      if (lastClaimRecords.length > 0) {
+        const existingRecord = lastClaimRecords[0];
+        const updateResult = await window.dataSdk.update({
+          ...existingRecord,
+          last_claim_timestamp: currentTime
+        });
+        
+        if (!updateResult.isOk) {
+          console.error('Failed to update claim timestamp');
+        }
+      } else {
+        const createResult = await window.dataSdk.create({
+          id: LAST_CLAIM_KEY,
+          prize_name: 'timestamp',
+          probability: 0,
+          last_claim_timestamp: currentTime
+        });
+        
+        if (!createResult.isOk) {
+          console.error('Failed to save claim timestamp');
+        }
+      }
+
+      canClaim = false;
+      grid.classList.remove('loading');
+      checkClaimAvailability(currentTime);
+    }
+
+    function selectRandomPrize() {
+      const totalProbability = prizes.reduce((sum, prize) => sum + prize.probability, 0);
+      let random = Math.random() * totalProbability;
+
+      for (const prize of prizes) {
+        random -= prize.probability;
+        if (random <= 0) {
+          return prize.prize_name;
+        }
+      }
+
+      return prizes[0].prize_name;
+    }
+
+    function showWinModal(prizeName) {
+      const modal = document.getElementById('modalOverlay');
+      const prizeDisplay = document.getElementById('prizeDisplay');
+      
+      prizeDisplay.textContent = prizeName;
+      modal.style.display = 'flex';
+
+      createConfetti();
+    }
+
+    function createConfetti() {
+      const modal = document.querySelector('.modal-content');
+      const colors = ['#ffd700', '#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24'];
+
+      for (let i = 0; i < 50; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.left = Math.random() * 100 + '%';
+        confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.animationDelay = Math.random() * 2 + 's';
+        modal.appendChild(confetti);
+
+        setTimeout(() => confetti.remove(), 3000);
+      }
+    }
+
+    function checkClaimAvailability(lastClaimTime) {
+      const now = Date.now();
+      const timeDiff = now - lastClaimTime;
+      const twentyFourHours = 24 * 60 * 60 * 1000;
+
+      if (timeDiff < twentyFourHours) {
+        canClaim = false;
+        const remainingTime = twentyFourHours - timeDiff;
+        startCountdown(remainingTime);
+        
+        const grid = document.getElementById('boxesGrid');
+        grid.classList.add('disabled');
+        
+        const timerInfo = document.getElementById('timerInfo');
+        timerInfo.style.display = 'block';
+      } else {
+        canClaim = true;
+        const grid = document.getElementById('boxesGrid');
+        grid.classList.remove('disabled');
+        
+        const timerInfo = document.getElementById('timerInfo');
+        timerInfo.style.display = 'none';
+        
+        if (countdownInterval) {
+          clearInterval(countdownInterval);
+        }
+      }
+    }
+
+    function startCountdown(remainingTime) {
+      const countdownEl = document.getElementById('countdown');
+      
+      function updateCountdown() {
+        remainingTime -= 1000;
+        
+        if (remainingTime <= 0) {
+          clearInterval(countdownInterval);
+          canClaim = true;
+          const grid = document.getElementById('boxesGrid');
+          grid.classList.remove('disabled');
+          const timerInfo = document.getElementById('timerInfo');
+          timerInfo.style.display = 'none';
+          return;
+        }
+
+        const hours = Math.floor(remainingTime / (1000 * 60 * 60));
+        const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
+
+        countdownEl.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+      }
+
+      updateCountdown();
+      countdownInterval = setInterval(updateCountdown, 1000);
+    }
+
+    function setupEventListeners() {
+      document.getElementById('adminToggleBtn').addEventListener('click', () => {
+        document.getElementById('adminPanel').style.display = 'block';
+      });
+
+      document.getElementById('closeAdminBtn').addEventListener('click', () => {
+        document.getElementById('adminPanel').style.display = 'none';
+        isLoggedIn = false;
+        document.getElementById('loginSection').style.display = 'block';
+        document.getElementById('adminSection').style.display = 'none';
+        document.getElementById('adminPassword').value = '';
+        document.getElementById('loginError').style.display = 'none';
+      });
+
+      document.getElementById('loginForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const password = document.getElementById('adminPassword').value;
+        
+        if (password === ADMIN_PASSWORD) {
+          isLoggedIn = true;
+          document.getElementById('loginSection').style.display = 'none';
+          document.getElementById('adminSection').style.display = 'block';
+          document.getElementById('loginError').style.display = 'none';
+          renderPrizeList();
+        } else {
+          document.getElementById('loginError').style.display = 'block';
+        }
+      });
+
+      document.getElementById('saveBtn').addEventListener('click', savePrizes);
+
+      document.getElementById('closeModalBtn').addEventListener('click', () => {
+        document.getElementById('modalOverlay').style.display = 'none';
+      });
+    }
+
+    function renderPrizeList() {
+      const container = document.getElementById('prizeList');
+      container.innerHTML = '';
+
+      prizes.filter(p => p.id !== LAST_CLAIM_KEY).forEach((prize, index) => {
+        const item = document.createElement('div');
+        item.className = 'prize-item';
+        item.innerHTML = `
+          <div class="prize-header">
+            <div class="prize-name">${prize.prize_name}</div>
+            <div class="probability-control">
+              <span class="probability-label">شانس برد:</span>
+              <input type="number" class="probability-input" value="${prize.probability}" min="0" max="100" step="0.1" data-index="${index}">
+              <span class="probability-label">%</span>
+            </div>
+          </div>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    async function savePrizes() {
+      const saveBtn = document.getElementById('saveBtn');
+      saveBtn.classList.add('loading');
+      saveBtn.textContent = 'در حال ذخیره...';
+
+      const inputs = document.querySelectorAll('.probability-input');
+      const filteredPrizes = prizes.filter(p => p.id !== LAST_CLAIM_KEY);
+
+      for (let i = 0; i < inputs.length; i++) {
+        const newProbability = parseFloat(inputs[i].value) || 0;
+        const prize = filteredPrizes[i];
+        
+        if (prize.probability !== newProbability) {
+          prize.probability = newProbability;
+          
+          if (prize.__backendId) {
+            const updateResult = await window.dataSdk.update(prize);
+            if (!updateResult.isOk) {
+              console.error('Failed to update prize');
+            }
+          } else {
+            const createResult = await window.dataSdk.create({
+              id: prize.id,
+              prize_name: prize.prize_name,
+              probability: prize.probability,
+              last_claim_timestamp: 0
+            });
+            if (!createResult.isOk) {
+              console.error('Failed to create prize');
+            }
+          }
+        }
+      }
+
+      saveBtn.classList.remove('loading');
+      saveBtn.textContent = 'ذخیره شد!';
+      setTimeout(() => {
+        saveBtn.textContent = 'ذخیره تغییرات';
+      }, 2000);
+    }
+
+    initializeApp();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9a938f45429b9dc1',t:'MTc2NDkzNzg3Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
